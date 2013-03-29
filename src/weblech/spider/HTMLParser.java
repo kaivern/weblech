@@ -31,20 +31,22 @@ import java.util.HashSet;
 import java.util.Set;
 import java.net.URL;
 import java.net.MalformedURLException;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 
 import weblech.ui.LechLogger;
 
-public class HTMLParser
+public class HTMLParser implements WebParser
 {
 	private SpiderConfig config;
+	
+	private AssetParser assetParser;
 
 	public HTMLParser(SpiderConfig config)
     {
         this.config = config;
+        this.assetParser = new AssetParser();
     }
 
     public List parseLinksInDocument(URL sourceURL, String textContent)
@@ -74,13 +76,48 @@ public class HTMLParser
         extractAttributesFromTags("FRAME", "SRC", sourceURL, newURLs, newURLSet, textContent);
 		extractAttributesFromTags("LINK", "HREF", sourceURL, newURLs, newURLSet, textContent);
 		extractAttributesFromTags("EMBED", "SRC", sourceURL, newURLs, newURLSet, textContent);
-
+		extractAttributesFromTags("script", "src", sourceURL, newURLs, newURLSet, textContent);
+		
+		extractLinksFromContents("script", sourceURL, newURLs, newURLSet, textContent);
+		
         if(newURLs.size() == 0)
         {
             LechLogger.debug("Got 0 new URLs from HTML parse, check HTML\n" + textContent);
         }
         LechLogger.debug("Returning " + newURLs.size() + " urls extracted from page");
         return newURLs;
+    }
+    
+    private void extractLinksFromContents(String tag, URL sourceURL, List newURLs, Set newURLSet, String input)
+    {
+    	LechLogger.debug("extractAttributesFromTags(" + tag + ", ...)");
+    	int startPos = 0;
+        String startTag = "<" + tag + " ";
+        String endTag="</" + tag + ">";
+        StringBuilder content = new StringBuilder("");
+        while(true)
+        {
+        	int tagPos = input.indexOf(startTag, startPos);
+        	if(tagPos < 0)
+            {
+                break;
+            }
+        	int endTagPos = input.indexOf(endTag, tagPos + 1);
+        	if(endTagPos != -1)
+            {
+        		content.append(input.substring(tagPos, endTagPos).trim());
+            }
+        	startPos = tagPos + 1;
+        }
+		List newImages = assetParser.parseLinksInDocument(sourceURL, content.toString());
+    	for(Object newImage : newImages)
+    	{
+    		if(!newURLSet.contains(newImage))
+    		{
+    			newURLs.add(newImage);
+                newURLSet.add(newImage);
+    		}
+    	}
     }
 
     private void extractAttributesFromTags(String tag, String attr, URL sourceURL, List newURLs, Set newURLSet, String input)

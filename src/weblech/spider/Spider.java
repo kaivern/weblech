@@ -63,10 +63,15 @@ public class Spider implements Runnable, Constants
     private int running;
     /** Time we last checkpointed. */
     private long lastCheckpoint;
+    // HTML Parser
+    private HTMLParser htmlParser;
+    private AssetParser assetParser;
 
     public Spider(SpiderConfig config)
     {
         this.config = config;
+        htmlParser = new HTMLParser(config);
+        assetParser = new AssetParser();
         queue = new DownloadQueue(config);
         queue.queueURL(new URLToDownload(config.getStartLocation(), 0));
         urlsDownloadedOrScheduled = new HashSet();
@@ -155,7 +160,6 @@ public class Spider implements Runnable, Constants
 
     public void run()
     {
-        HTMLParser htmlParser = new HTMLParser(config);
         URLGetter urlGetter = new URLGetter(config);
 
         while((queueSize() > 0 || downloadsInProgress > 0) && quit == false)
@@ -194,7 +198,7 @@ public class Spider implements Runnable, Constants
             {
                 urlsDownloading.remove(nextURL);
             }
-            List newURLs = downloadURL(nextURL, urlGetter, htmlParser);
+            List newURLs = downloadURL(nextURL, urlGetter);
 
             newURLs = filterURLs(newURLs);
 
@@ -239,7 +243,7 @@ public class Spider implements Runnable, Constants
      *
      * @return A List of URL objects.
      */
-    private List downloadURL(URLToDownload url, URLGetter urlGetter, HTMLParser htmlParser)
+    private List downloadURL(URLToDownload url, URLGetter urlGetter)
     {
         LechLogger.debug("downloadURL(" + url + ")");
 
@@ -252,7 +256,7 @@ public class Spider implements Runnable, Constants
                 LechLogger.info("Q: [" + queue + "] " + url);
                 obj = urlGetter.getURL(url);
             }
-            else if(config.refreshImages() && obj.isImage())
+            else if(config.refreshImages() && obj.isAsset())
             {
                 LechLogger.info("Q: [" + queue + "] " + url);
                 obj = urlGetter.getURL(url);
@@ -278,7 +282,11 @@ public class Spider implements Runnable, Constants
         {
             return htmlParser.parseLinksInDocument(url.getURL(), obj.getStringContent());
         }
-        else if(obj.isImage())
+        else if(obj.isCSS() || obj.isJavaScript())
+        {
+        	return assetParser.parseLinksInDocument(url.getURL(), obj.getStringContent());
+        }
+        else if(obj.isAsset())
         {
             return new ArrayList();
         }

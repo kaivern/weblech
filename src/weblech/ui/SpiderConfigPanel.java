@@ -57,7 +57,7 @@ public class SpiderConfigPanel extends JPanel implements ActionListener {
 		JPanel sitepanel = new JPanel();
 		((FlowLayout) sitepanel.getLayout()).setAlignment ( FlowLayout.RIGHT );
 		JLabel sitelabel = new JLabel ( "Output Directory:" );
-		dirfield = new JTextField ( System.getProperty ( "user.home" ), 20 );
+		dirfield = new JTextField ( System.getProperty ( "user.home") + "\\crawled", 20 );
 		sitepanel.add ( sitelabel );
 		sitepanel.add ( dirfield );
 		
@@ -89,7 +89,7 @@ public class SpiderConfigPanel extends JPanel implements ActionListener {
 		JPanel agentpanel = new JPanel();
 		((FlowLayout) agentpanel.getLayout()).setAlignment ( FlowLayout.RIGHT );
 		JLabel agentlabel = new JLabel ( "User Agent:" );
-		agentfield = new JTextField ( "WebLech [Version C]", 20 );
+		agentfield = new JTextField ( "Mozilla/5.0 (Windows NT 5.1; rv:18.0) Gecko/20100101 Firefox/18.0", 20 );
 		agentpanel.add ( agentlabel );
 		agentpanel.add ( agentfield );
 		

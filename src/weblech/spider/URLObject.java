@@ -57,9 +57,33 @@ public class URLObject
         {
             contentType = "image/jpeg";
         }
+        else if(s.indexOf(".png") != -1)
+        {
+        	contentType = "image/png";
+        }
         else if(s.indexOf(".gif") != -1)
         {
             contentType = "image/gif";
+        }
+        else if(s.indexOf(".css") != -1)
+        {
+        	contentType = "text/css";
+        }
+        else if(s.indexOf(".js") != -1)
+        {
+        	contentType = "text/javascript";
+        }
+        else if(s.indexOf("ttf")!=-1)
+        {
+        	contentType = "application/x-font-ttf";
+        }
+        else if(s.indexOf("woff")!=-1)
+        {
+        	contentType = "application/x-font-woff";
+        }
+        else if(s.indexOf("eot")!=-1)
+        {
+        	contentType = "application/x-font-eot";
         }
         else
         {
@@ -106,10 +130,30 @@ public class URLObject
     {
         return contentType.toLowerCase().startsWith("text/xml");
     }
+    
+    public boolean isCSS()
+    {
+    	return contentType.toLowerCase().startsWith("text/css");
+    }
 
     public boolean isImage()
     {
         return contentType.startsWith("image/");
+    }
+    
+    public boolean isFont()
+    {
+    	return contentType.indexOf("font") != -1;
+    }
+    
+    public boolean isAsset()
+    {
+    	return isImage() || isFont();
+    }
+    
+    public boolean isJavaScript()
+    {
+    	return contentType.startsWith("text/javascript");
     }
 
     public String getStringContent()
@@ -160,6 +204,10 @@ public class URLObject
     public void writeToFile(String fileName)
     {
         LechLogger.debug("writeToFile(" + fileName + ")");
+        if(fileName.indexOf("%3F")!=-1)
+        {
+        	fileName = fileName.substring(0, fileName.indexOf("%3F"));
+        }
         try
         {
             File f = new File(fileName);

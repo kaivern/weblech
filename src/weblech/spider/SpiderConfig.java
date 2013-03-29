@@ -69,7 +69,7 @@ public class SpiderConfig implements Serializable
     public SpiderConfig()
     {
         LechLogger.debug("SpiderConfig()");
-
+        
         saveRootDirectory = new File(".");
         mailtoLogFile = new File("mailto.txt");
 
@@ -96,7 +96,7 @@ public class SpiderConfig implements Serializable
         depthFirst = false;
         maxDepth = 0;
 
-        userAgent = "WebLech Spider [Release C]";
+        userAgent = "Mozilla/5.0 (Windows NT 5.1; rv:18.0) Gecko/20100101 Firefox/18.0";
         basicAuthUser = "";
         basicAuthPassword = "";
 
