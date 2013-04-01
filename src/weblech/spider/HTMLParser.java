@@ -77,7 +77,7 @@ public class HTMLParser implements WebParser
 		extractAttributesFromTags("LINK", "HREF", sourceURL, newURLs, newURLSet, textContent);
 		extractAttributesFromTags("EMBED", "SRC", sourceURL, newURLs, newURLSet, textContent);
 		extractAttributesFromTags("script", "src", sourceURL, newURLs, newURLSet, textContent);
-		
+		extractAttributesFromTags("iframe", "src", sourceURL, newURLs, newURLSet, textContent);
 		extractLinksFromContents("script", sourceURL, newURLs, newURLSet, textContent);
 		
         if(newURLs.size() == 0)
