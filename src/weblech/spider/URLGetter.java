@@ -62,7 +62,7 @@ public class URLGetter
 
         try
         {
-        	System.setProperty("http.proxyHost", "proxy.statestr.com");
+        	System.setProperty("http.proxyHost", "proxy.xxxx.com");
     		System.setProperty("http.proxyPort", "80");
             LechLogger.debug("Creating HTTP connection to " + requestedURL);
             HttpURLConnection conn = (HttpURLConnection) requestedURL.openConnection();
